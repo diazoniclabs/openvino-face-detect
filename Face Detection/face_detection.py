@@ -1,14 +1,13 @@
 import cv2
 
-MODEL_FPATH = "./models/intel/face-detection-retail-0004/FP16/face-detection-retail-0004.bin"
-ARCH_FPATH = "./models/intel/face-detection-retail-0004/FP16/face-detection-retail-0004.xml"
+MODEL_FPATH = "face-detection-retail-0004.bin"
+ARCH_FPATH = "face-detection-retail-0004.xml"
 CONF_THRESH = 0.5 # confidence of each object detected
 
 net = cv2.dnn.readNet(ARCH_FPATH, MODEL_FPATH)
 
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_INFERENCE_ENGINE)
-#net.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD) 
-net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU) 
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD) 
 
 vid_cap = cv2.VideoCapture(0)
 if not vid_cap.isOpened():
