@@ -1,4 +1,6 @@
 import cv2
+import numpy 
+import time
 
 MODEL_FPATH = "face-detection-retail-0004.bin"
 ARCH_FPATH = "face-detection-retail-0004.xml"
@@ -8,6 +10,9 @@ net = cv2.dnn.readNet(ARCH_FPATH, MODEL_FPATH)
 
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_INFERENCE_ENGINE)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD) 
+prev_frame_time = 0
+new_frame_time = 0
+font = cv2.FONT_HERSHEY_SIMPLEX
 
 vid_cap = cv2.VideoCapture(0)
 if not vid_cap.isOpened():
@@ -16,6 +21,7 @@ if not vid_cap.isOpened():
 while True:
     # Capture frames
     ret, frame = vid_cap.read()
+    new_frame_time = time.time()
     
     # Prepare input blob and perform inference
     blob = cv2.dnn.blobFromImage(frame, size=(300, 300), ddepth=cv2.CV_8U)
@@ -32,6 +38,12 @@ while True:
 
         if conf > CONF_THRESH:
             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), color=(0, 255, 0), thickness=2)
+    
+    fps = 1/(new_frame_time-prev_frame_time)
+    prev_frame_time = new_frame_time
+    fps = int(fps)
+    fps = str(fps)
+    cv2.putText(frame, fps, (7, 70), font, 3, (100, 255, 0), 3, cv2.LINE_AA)
     
     cv2.imshow('Input', frame)
     
